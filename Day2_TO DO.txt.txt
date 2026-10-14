@@ -1,0 +1,319 @@
+SMOKE TEST, RUFF, PRE-COMMIT AND GITHUB ACTIONS
+Project: internet-as-strategic-terrain
+Office steps are local only (no push needed).
+GitHub steps are marked "AT HOME".
+
+THE BIG PICTURE
+Goal: every change to the project is automatically checked for
+bugs and messy code, first on your own computer (pre-commit),
+then on GitHub (Actions). Each step adds one layer of checking:
+
+  Smoke test  -> does the project run at all?
+  Ruff        -> is the code clean and consistently formatted?
+  Pre-commit  -> stop bad code BEFORE it is committed
+  GitHub CI   -> re-check everything on a clean machine after push
+  CI badge    -> show the result publicly in the README
+
+=====================================================
+STEP 1: WRITE A SMOKE TEST
+=====================================================
+WHAT THIS IS FOR:
+A smoke test is the smallest possible test. It does not check
+that your logic is correct. It only checks that the package can
+be imported and the main function can run without crashing. The
+name comes from electronics: switch it on, and if smoke comes
+out, stop. It is your first alarm for a badly broken project
+(broken import, wrong file name, typo in the entry point).
+
+Create the file tests\test_smoke.py with this content:
+
+import internet_as_strategic_terrain
+from internet_as_strategic_terrain import main
+
+
+def test_package_imports():
+    assert internet_as_strategic_terrain is not None
+
+
+def test_main_runs():
+    main()
+
+What each test does:
+- test_package_imports: proves the package can be imported.
+- test_main_runs: proves the entry point (main) runs without errors.
+
+Run it:
+uv run pytest
+
+Expected result: 3 passed (your old test plus these two)
+
+=====================================================
+STEP 2: ADD RUFF (LINTER AND FORMATTER)
+=====================================================
+WHAT THIS IS FOR:
+Ruff does two jobs in one tool:
+- LINTING: finds likely mistakes (unused imports, undefined
+  names, common bugs) without running the code.
+- FORMATTING: rewrites the code into one consistent style
+  (spacing, quotes, line length), so you never argue about style
+  and code reviews show only real changes.
+Adding it early keeps the code clean from the start, and it is
+much easier than cleaning a large project later. Because ruff is
+a dev dependency in uv.lock, everyone uses the same version.
+
+uv add --dev ruff --system-certs
+
+Add this to the END of pyproject.toml (skip if already there):
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+What the settings mean:
+- line-length = 88: maximum characters per line.
+- target-version = "py312": ruff assumes Python 3.12 syntax.
+- E = style errors, F = unused/undefined names,
+  I = import order, B = common bugs, UP = modern Python syntax.
+
+Run it (fix problems first, then check):
+uv run ruff check --fix .
+uv run ruff format .
+uv run ruff check .
+uv run ruff format --check .
+
+What each command does:
+- ruff check --fix: finds problems and fixes the safe ones.
+- ruff format: reformats the files.
+- ruff check / format --check: only report, change nothing.
+  These are the same commands CI will run later, so if they pass
+  here, they pass there.
+
+Both checks should finish with no errors.
+
+Commit:
+git add .
+git commit -m "Add smoke test and ruff config"
+
+=====================================================
+STEP 3: ADD A PRE-COMMIT HOOK
+=====================================================
+WHAT THIS IS FOR:
+A pre-commit hook is a script that git runs automatically every
+time you type git commit. Here it runs ruff, so badly formatted
+code or obvious mistakes are caught (and often auto-fixed) before
+they enter your history. This gives you fast feedback on your own
+computer instead of waiting for GitHub to fail later.
+
+Why "local" hooks: they run ruff through uv, so they use the exact
+ruff version from uv.lock and need no extra downloads.
+
+uv add --dev pre-commit --system-certs
+
+Create the file .pre-commit-config.yaml with this content
+(keep the indentation exactly):
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check --fix
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format
+        language: system
+        types: [python]
+
+What the file says: before each commit, run ruff check (with
+auto-fix) and ruff format on the Python files being committed.
+
+Install the hook into git (once per clone):
+uv run pre-commit install
+
+This step is needed because git hooks are not stored in the
+repository. Every new clone must run it once.
+
+Test it on all files:
+uv run pre-commit run --all-files
+
+Expected result: both hooks show Passed.
+
+From now on, git commit runs ruff first. If ruff changes a file,
+the commit stops: run git add . and commit again.
+
+Commit:
+git add .
+git commit -m "Add pre-commit hook"
+
+=====================================================
+STEP 4: ADD GITHUB ACTIONS (RUNS RUFF + PYTEST ON EVERY PUSH)
+=====================================================
+WHAT THIS IS FOR:
+GitHub Actions is GitHub's built-in automation. This workflow
+starts a fresh machine every time you push, installs the project
+from uv.lock, and runs ruff and pytest. It matters because:
+- It proves the project works on a clean machine, not just on
+  yours ("it works on my computer" problem).
+- It catches mistakes if you skipped the pre-commit hook or
+  committed with --no-verify.
+- It checks every pull request before it is merged.
+
+You can create and commit this file at the office. It does
+nothing until you push to GitHub.
+
+Create the folders .github\workflows and inside them the file
+ci.yml with this content (keep the indentation exactly):
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Ruff lint
+        run: uv run ruff check .
+
+      - name: Ruff format check
+        run: uv run ruff format --check .
+
+      - name: Pytest
+        run: uv run pytest
+
+What each part does:
+- on: push / pull_request: when the workflow runs.
+- runs-on: ubuntu-latest: the clean machine GitHub provides.
+- actions/checkout: downloads your code onto that machine.
+- setup-uv: installs uv.
+- uv sync --locked: installs exactly what uv.lock says, using
+  .python-version for the Python version. It fails if uv.lock is
+  out of date, which protects the pinning.
+- ruff check / ruff format --check: lint and format check.
+- pytest: runs all tests, including the smoke test.
+
+Notes:
+- The path must be exactly .github\workflows\ci.yml
+- --system-certs is NOT needed on GitHub, only on your work network.
+
+Run the same checks locally first, so the first run on GitHub
+is green:
+uv run ruff check .
+uv run ruff format --check .
+uv run pytest
+
+Commit locally:
+git add .github
+git commit -m "Add GitHub Actions CI"
+
+=====================================================
+FINAL CHECK (OFFICE)
+=====================================================
+WHAT THIS IS FOR:
+One last pass to confirm that everything is consistent before you
+leave: lockfile matches pyproject.toml, code is clean, tests
+pass, and nothing is left uncommitted.
+
+uv lock --check
+uv run ruff check .
+uv run ruff format --check .
+uv run pytest
+git status
+
+All commands should pass and git status should be clean.
+
+=====================================================
+AT HOME, STEP 5: LINK GITHUB AND PUSH
+=====================================================
+WHAT THIS IS FOR:
+Until now everything exists only on this computer. This step
+connects the local repository to GitHub and uploads all commits.
+The moment you push, GitHub Actions (Step 4) starts running
+automatically. It also gives you an off-site backup of the code.
+
+Repo: https://github.com/GuilhermePTor/Internet-Strategic-Terrain
+
+If the repo does not exist, create it at https://github.com/new
+Name: Internet-Strategic-Terrain
+Leave it EMPTY (no README, .gitignore or license), otherwise the
+histories will conflict.
+
+Link and push:
+git remote add origin https://github.com/GuilhermePTor/Internet-Strategic-Terrain.git
+git branch -M main
+git push -u origin main
+
+What each command does:
+- remote add origin: tells git where the GitHub repo is.
+- branch -M main: renames your branch to main (GitHub's default).
+- push -u origin main: uploads the commits and remembers the
+  link, so later you only need git push.
+
+If it says "remote origin already exists":
+git remote set-url origin https://github.com/GuilhermePTor/Internet-Strategic-Terrain.git
+
+Check the Actions result:
+https://github.com/GuilhermePTor/Internet-Strategic-Terrain/actions
+A green check means ruff and pytest passed.
+
+After cloning on any new machine, run once:
+uv sync --locked
+uv run pre-commit install
+
+=====================================================
+AT HOME, STEP 6: ADD THE CI BADGE TO THE README
+=====================================================
+WHAT THIS IS FOR:
+The badge is a small image in the README that shows whether the
+latest CI run passed (green "passing") or failed (red "failing").
+Anyone opening the repo sees the project's health at a glance, and
+you notice quickly if a push broke something.
+
+Open README.md and put this line at the top, under the title:
+
+[![CI](https://github.com/GuilhermePTor/Internet-Strategic-Terrain/actions/workflows/ci.yml/badge.svg)](https://github.com/GuilhermePTor/Internet-Strategic-Terrain/actions/workflows/ci.yml)
+
+(The badge file name must match the workflow file name: ci.yml.)
+
+Commit and push:
+git add README.md
+git commit -m "Add CI badge"
+git push
+
+The badge should show "passing" in green (it can take a minute).
+
+=====================================================
+IF SOMETHING FAILS
+=====================================================
+- Certificate error with uv: add --system-certs or run
+  setx UV_SYSTEM_CERTS true and reopen the terminal.
+- Certificate error with git push: run
+  git config --global http.sslBackend schannel
+- Commit stops after pre-commit runs: ruff changed a file.
+  Run git add . and commit again.
+- uv lock --check fails: run uv lock, then commit uv.lock.
+- CI fails on "ruff format --check": run uv run ruff format .
+  then commit and push.
+- CI fails on "uv sync --locked": run uv lock, then commit
+  uv.lock and push.
+- Workflow ignored: path must be exactly .github\workflows\ci.yml
+- Badge shows "no status": the workflow has not run yet. Check
+  the Actions tab and that the file is named ci.yml.
+- Push rejected (repo already has files):
+  git pull origin main --allow-unrelated-histories
+  resolve any conflict, commit, then git push -u origin main
