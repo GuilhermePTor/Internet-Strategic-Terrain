@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Critical Minerals Platform: Project Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F5F6; --surface:#FFFFFF; --ink:#14232B; --muted:#586971; --line:#D3DDE1;
+  --accent:#1D6A8C; --accent-soft:#E0EEF4; --done:#2B7A58; --warn-bg:#FFF3D1; --warn-ink:#5C4300;
+  --font:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0E181D; --surface:#15242B; --ink:#E5EDF0; --muted:#9BAEB6; --line:#27404A;
+    --accent:#72B9D8; --accent-soft:#16333E; --done:#5DC596; --warn-bg:#3A2F10; --warn-ink:#F2D98B;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.55}
+code{font-family:var(--mono);font-size:.86em;background:var(--accent-soft);padding:.1em .38em;border-radius:4px}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1240px;margin:0 auto;gap:40px;padding:32px 24px 80px}
+nav.side{position:sticky;top:24px;align-self:start;max-height:calc(100vh - 48px);overflow:auto;padding-right:4px}
+nav.side h2{font-size:.95rem;margin:0 0 10px;font-weight:600;color:var(--muted)}
+nav.side a{display:flex;justify-content:space-between;gap:10px;padding:7px 10px;border-radius:6px;text-decoration:none;color:var(--ink);font-size:.93rem}
+nav.side a:hover{background:var(--accent-soft)}
+nav.side a span.pct{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+nav.side .tools{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;font-size:.88rem;padding:7px 12px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{min-width:0}
+header.top h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.12;margin:0 0 10px;font-weight:700;letter-spacing:-.02em}
+header.top p.lead{font-size:1.08rem;color:var(--muted);max-width:62ch;margin:0 0 24px}
+.ladder{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin:6px 0 8px}
+.ladder a{display:block;text-decoration:none;color:var(--ink)}
+.ladder .bar{height:34px;border-radius:5px;background:var(--surface);border:1px solid var(--line);position:relative;overflow:hidden}
+.ladder .bar i{position:absolute;inset:0 auto 0 0;background:var(--accent);opacity:.85;width:0}
+.ladder small{display:block;text-align:center;font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:4px}
+.overall{display:flex;align-items:baseline;gap:12px;margin:14px 0 36px;color:var(--muted)}
+.overall strong{font-size:1.5rem;color:var(--ink);font-family:var(--mono)}
+section.block{margin:0 0 44px}
+section.block>h2{font-size:1.5rem;margin:0 0 12px;letter-spacing:-.01em}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.card+.card{margin-top:12px}
+.card h3{margin:0 0 8px;font-size:1.02rem}
+ul.plain{margin:0;padding-left:20px}
+ul.plain li{margin:4px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:.86rem}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px 8px}
+article.phase{margin:0 0 56px;padding-top:8px;border-top:2px solid var(--ink)}
+article.phase h2{font-size:1.65rem;margin:14px 0 6px;letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:.93rem;margin:0 0 12px}
+.meta b{color:var(--ink);font-weight:600}
+.pbar{display:flex;align-items:center;gap:12px;margin:10px 0 18px}
+.pbar .track{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.pbar .track i{display:block;height:100%;width:0;background:var(--done);transition:width .25s}
+.pbar span{font-family:var(--mono);font-size:.82rem;color:var(--muted);white-space:nowrap}
+.warn{background:var(--warn-bg);color:var(--warn-ink);border-radius:8px;padding:10px 14px;margin:0 0 16px;font-size:.93rem}
+.dash{border-left:4px solid var(--accent);background:var(--surface);border-radius:0 10px 10px 0;padding:16px 20px;margin:0 0 18px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.dash h3{margin:0 0 6px;font-size:1.05rem}
+.dash h4{margin:12px 0 4px;font-size:.92rem;color:var(--muted);font-weight:600}
+.dash p{margin:0}
+details.sess{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:0 0 10px}
+details.sess>summary{cursor:pointer;padding:12px 16px;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+details.sess>summary::-webkit-details-marker{display:none}
+details.sess>summary::before{content:"+";font-family:var(--mono);color:var(--accent);margin-right:10px;width:1ch;display:inline-block}
+details.sess[open]>summary::before{content:"\2013"}
+details.sess>summary .sn{flex:1}
+details.sess>summary .sc{font-family:var(--mono);font-size:.8rem;color:var(--muted);font-weight:400}
+ul.tasks{list-style:none;margin:0;padding:2px 16px 14px}
+ul.tasks li{padding:9px 0;border-top:1px solid var(--line)}
+ul.tasks label{display:grid;grid-template-columns:22px 1fr;gap:8px;cursor:pointer}
+ul.tasks input{width:18px;height:18px;margin:3px 0 0;accent-color:var(--accent)}
+ul.tasks .t{font-weight:500}
+ul.tasks .why{display:block;color:var(--muted);font-size:.9rem;margin-top:2px}
+ul.tasks li.done .t{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.done-when{margin:14px 0 0;padding:12px 16px;border-radius:8px;background:var(--accent-soft)}
+footer{color:var(--muted);font-size:.88rem;margin-top:40px}
+@media (max-width:920px){
+  .layout{grid-template-columns:1fr;gap:20px;padding:20px 16px 60px}
+  nav.side{position:static;max-height:none}
+  .ladder{grid-template-columns:repeat(5,1fr)}
+}
+@media print{
+  nav.side,.tools{display:none}
+  .layout{display:block;padding:0}
+  details.sess{break-inside:avoid}
+  body{background:#fff;color:#000}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="side" aria-label="Plan navigation">
+    <h2>Contents</h2>
+    <div id="nav"></div>
+    <div class="tools">
+      <button id="expand">Expand all</button>
+      <button id="collapse">Collapse all</button>
+      <button id="print">Print</button>
+      <button id="reset">Reset progress</button>
+    </div>
+  </nav>
+  <main>
+    <header class="top">
+      <h1>Critical Minerals Platform: project plan</h1>
+      <p class="lead">One project that starts as a quick dashboard and grows into a full data platform, one tool at a time. Every phase ends with a working dashboard.</p>
+      <div class="ladder" id="ladder" aria-label="Progress by phase"></div>
+      <div class="overall"><strong id="overall">0%</strong><span id="overallText"></span></div>
+    </header>
+
+    <section class="block" id="how">
+      <h2>How this plan works</h2>
+      <div class="card">
+        <ul class="plain">
+          <li>Build a thin version of the whole thing first (data, metrics, visuals), then upgrade one layer at a time.</li>
+          <li>The dashboard stays constant. Only what sits underneath it changes, so every upgrade is visible.</li>
+          <li>Each phase adds one tool and one visible improvement. Never break the previous version: tag it and keep going.</li>
+          <li>Every task is sized for about one hour. Each task has a short <em>Why</em> so you know what you are learning.</li>
+          <li>Tick tasks as you go. Progress is saved in this browser automatically.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Research question</h3>
+        <p style="margin:0">How dependent are importing countries on a few suppliers for critical minerals (starting with Germany and natural graphite), and how much of that supply comes from countries that restrict exports?</p>
+      </div>
+      <div class="card">
+        <h3>Conventions for every phase</h3>
+        <ul class="plain">
+          <li>Dashboard tool: Streamlit + Plotly (free, easy to publish). Power BI works too for the same visuals.</li>
+          <li>The dashboard always reads one results table with fixed columns: <code>year, commodity, reporter, partner, import_value_usd, share, hhi, restricted_flag, exposure</code>. Do not rename these later.</li>
+          <li>Keep <code>docs/decisions.md</code>, add a screenshot to the README and create a git tag at the end of each phase.</li>
+          <li>Never commit secrets, raw data or Terraform state.</li>
+          <li>Check free-tier limits and quotas (Comtrade, GCP, BigQuery) when you start each phase, since they change.</li>
+          <li>If a task takes more than two sessions, split it or simplify it.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Key metrics</h3>
+        <ul class="plain">
+          <li><b>Supplier share</b> = partner import value / total import value, per year and product.</li>
+          <li><b>HHI</b> = sum of squared shares x 10,000. Higher means more concentrated. State which threshold you treat as highly concentrated (commonly above 2,500).</li>
+          <li><b>Restriction exposure</b> = share of imports coming from partners with an active export restriction on that product.</li>
+        </ul>
+      </div>
+    </section>
+
+    <div id="phases"></div>
+
+    <section class="block" id="overview">
+      <h2>Overview: progress at a glance</h2>
+      <div class="tablewrap"><table id="glance"></table></div>
+    </section>
+
+    <section class="block" id="habits">
+      <h2>Cross-cutting habits</h2>
+      <div class="card">
+        <ul class="plain">
+          <li>Tag a release at every milestone (<code>v0</code> to <code>v1.0-capstone</code>) and keep a <code>CHANGELOG.md</code>.</li>
+          <li>Keep one screenshot per tag. Side by side they make a visual timeline for your README or LinkedIn.</li>
+          <li>Write one paragraph per phase in <code>docs/decisions.md</code>: what you chose, why, and what went wrong.</li>
+          <li>Update the architecture diagram at the end of every phase.</li>
+          <li>Check that the Phase 0 baseline numbers have not changed unexpectedly. If they have, you found a data issue or introduced a bug: write it down.</li>
+          <li>Phases 1, 2, 5 and 6 add few new charts by design. A phase that adds trust or reliability is still progress, which is why each one adds a dedicated page.</li>
+        </ul>
+      </div>
+    </section>
+    <footer>Sequence adapted from the 2026 DataTalks Data Engineering Zoomcamp curriculum (Docker, Terraform, Kestra, dlt, BigQuery, dbt, Bruin, Spark, Kafka). Official repository: <a href="https://github.com/DataTalksClub/data-engineering-zoomcamp">github.com/DataTalksClub/data-engineering-zoomcamp</a>.</footer>
+  </main>
+</div>
+
+<script>
+const PHASES = [
+{
+ id:0, tag:"v0", title:"Quick win with files", est:"about 6 sessions",
+ stack:"Python, uv, pandas, Parquet, (DuckDB optional), Streamlit, Plotly",
+ scope:"Germany, natural graphite (HS 250410 and 250490), imports, about 10 years",
+ added:"Baseline pipeline and first dashboard",
+ skill:"Data analysis, API ingestion", kind:"First answer",
+ dash:{page:"Overview dashboard",
+  content:["KPI cards: latest-year HHI, number of suppliers, top-supplier share, % of imports exposed to export restrictions","Stacked bar of Germany's graphite imports by supplier over time","HHI line chart with a 'highly concentrated' reference band","Exposure-over-time chart","World choropleth of supplier share (year slider)","Short 'how to read this' text and a data-sources footer"],
+  q:"Is Germany dependent on a few suppliers for graphite, and are those suppliers restricting exports?",
+  v:"This is the proof of concept: raw public APIs to a real analytical answer. The numbers here become your baseline that every later phase must reproduce."},
+ sessions:[
+  {s:"Session 1: Setup and raw data",t:[
+   ["Create the GitHub repo, `uv init`, add pandas, pyarrow, requests, streamlit, plotly, pytest","A reproducible environment from day one is the foundation of every later phase."],
+   ["Create `data/raw`, `data/processed`, `src`, `app`, `tests`","Separating raw, processed and code is the basic structure of any data project."],
+   ["Register for the free UN Comtrade key and store it in `.env` (gitignored)","You learn to keep secrets out of code and out of Git."],
+   ["Write the research question in the README","A clear question decides which data you need and stops you building aimlessly."],
+   ["Download Germany's graphite imports for each year (all partners) and save the raw responses untouched with a timestamp","Keeping raw data lets you re-run everything if your cleaning changes or the source revises numbers."]]},
+  {s:"Session 2: Second source and cleaning",t:[
+   ["Download the OECD export-restrictions dataset into `data/raw/oecd/` and note the date in `SOURCES.md`","Provenance (where data came from and when) is what makes results trustworthy."],
+   ["Inspect both files in a notebook: columns, types, nulls, year coverage","Exploring before transforming prevents silent errors from wrong assumptions."],
+   ["Build `country_crosswalk.csv` (name, ISO3, Comtrade code) and check every supplier maps","Joining datasets that identify countries differently is one of the most common real-world data problems."],
+   ["Clean both datasets and write Parquet files to `data/processed/`","Parquet keeps types and is fast, so it is the standard intermediate format in data engineering."]]},
+  {s:"Session 3: Metrics",t:[
+   ["Compute supplier share per year (partner value / total value)","Shares are the building block for both concentration and exposure."],
+   ["Compute HHI = sum of squared shares x 10,000","HHI is the standard measure of concentration, so you learn to turn a domain concept into code."],
+   ["Join imports to restrictions via the crosswalk and compute exposure","This combines two sources into the insight the project exists to produce."],
+   ["Save `results.parquet` and `results.csv`","One fixed results table decouples the dashboard from everything underneath, which makes every later upgrade easy."]]},
+  {s:"Session 4: Dashboard v1",t:[
+   ["Create `app/app.py` with a sidebar year selector","First contact with Streamlit's interaction model (widgets that re-run the script)."],
+   ["Add the KPI cards: HHI, number of suppliers, top-supplier share, exposure %","Learn to summarise results in the few numbers a reader looks at first."],
+   ["Add the stacked bar of imports by supplier over time (top 5 + 'Other')","Shows composition over time, the best way to see concentration changing."],
+   ["Add the HHI line chart","A single metric over time reveals the trend at a glance."]]},
+  {s:"Session 5: Dashboard v2",t:[
+   ["Add the exposure-over-time chart","Connects trade data to policy risk visually."],
+   ["Add the world choropleth of supplier share for the selected year","Geography makes supplier patterns instantly understandable."],
+   ["Add a 'how to read this' text and a data-sources footer","A dashboard without explanation is just charts. Context makes it usable by others."]]},
+  {s:"Session 6: Ship it",t:[
+   ["Write `run_pipeline.py` (extract, clean, metrics)","One entry point is the first step toward automation."],
+   ["Add 3 pytest tests: shares sum to 1, HHI between 0 and 10,000, no duplicate partner/year rows","Automated checks catch broken data before a reader does."],
+   ["Take screenshots, update the README, tag `v0`","Tags create restore points and a visible record of progress."],
+   ["(Optional) Deploy to Streamlit Community Cloud and add the link to the README","A public link turns a local project into portfolio evidence."]]}
+ ],
+ done:"`python run_pipeline.py && streamlit run app/app.py` shows all visuals."
+},
+{
+ id:1, tag:"v1", title:"Database and tests", est:"about 9 sessions",
+ stack:"PostgreSQL, SQL, pytest (expanded)",
+ added:"Data in Postgres with upsert keys, metrics in SQL, tests",
+ skill:"SQL, testing, idempotency", kind:"Trust",
+ dash:{page:"Same dashboard + Data quality page",
+  content:["Data quality page: last refresh time, row counts per table, test pass/fail status, duplicate-check result","Main pages now read from PostgreSQL instead of files"],
+  q:"Can I trust these numbers?",
+  v:"The charts do not change, which is the point. The new page shows you moved from a script that produces charts to a system whose output is verified. If the main charts match Phase 0 exactly, the migration worked."},
+ sessions:[
+  {s:"Sessions 1-2: Schema",t:[
+   ["Install PostgreSQL and create the `critical_minerals` database","A real database is the shared, queryable store production systems rely on."],
+   ["Write `sql/schema.sql` with `dim_country`, `trade_imports`, `export_restrictions`","Designing tables deliberately (not letting pandas guess) is core data modelling."],
+   ["Define natural primary keys, e.g. (reporter, partner, year, hs_code, flow)","A key defines what one row means (the grain) and prevents duplicates."],
+   ["Add NOT NULL, CHECK (value >= 0) and foreign-key constraints","Constraints make the database reject bad data instead of storing it quietly."]]},
+  {s:"Sessions 3-4: Loading",t:[
+   ["Write `load.py` with psycopg and `INSERT ... ON CONFLICT DO UPDATE`","Upserts are how you make loads idempotent (safe to re-run)."],
+   ["Load `dim_country` from the crosswalk","Dimension tables are the reference data fact tables join to."],
+   ["Run the load twice and verify the row counts do not change","Proves idempotency empirically instead of assuming it."],
+   ["Add an `ingestion_log` table (source, run time, rows loaded)","Recording each load is the start of pipeline observability."]]},
+  {s:"Sessions 5-6: Metrics in SQL",t:[
+   ["Write views `v_supplier_share`, `v_hhi`, `v_restriction_exposure`","Putting logic in SQL views makes it reusable and inspectable."],
+   ["Create `v_results` with exactly the dashboard's fixed columns","This is the contract the dashboard depends on."],
+   ["Reconcile the SQL results against your Phase 0 pandas results (difference under tolerance)","Comparing old and new implementations is how you verify a migration."],
+   ["Turn the reconciliation into a pytest test","A check that runs automatically protects you forever, not just once."]]},
+  {s:"Session 7: Tests",t:[
+   ["Test: no duplicate primary keys","Duplicates silently inflate totals, so this is the most important data test."],
+   ["Test: shares per year sum to 1","A mathematical invariant that catches missing or doubled rows."],
+   ["Test: every partner has a crosswalk entry","Unmapped countries would drop out of your joins unnoticed."],
+   ["Test: running the pipeline twice is idempotent","Guarantees safe retries and backfills later."]]},
+  {s:"Sessions 8-9: Dashboard",t:[
+   ["Switch the Streamlit data layer from Parquet to a SQL query","Keep the dashboard decoupled from the storage behind it."],
+   ["Add the 'Data quality' page: last refresh, row counts, test status","Showing test and load status builds user trust."],
+   ["Update the README and tag `v1`","Documenting each step makes the project readable to others."]]}
+ ],
+ done:"The dashboard works from Postgres and the tests pass."
+},
+{
+ id:2, tag:"v2", title:"Docker and Compose", est:"about 6 sessions",
+ stack:"Docker, Docker Compose",
+ added:"App, pipeline and database packaged together",
+ skill:"Docker, reproducibility", kind:"Portability",
+ dash:{page:"Same dashboard + About / Architecture page",
+  content:["Architecture diagram (app, pipeline, database in containers)","'How to run' box with the one-command start","Environment and version info (app version, git tag)"],
+  q:"Can someone else run and reproduce this?",
+  v:"This is about reproducibility, not new analysis. The evidence is that a stranger can run `docker compose up` and land on the same dashboard. It shows engineering maturity, which matters to employers more than another chart."},
+ sessions:[
+  {s:"Session 1",t:[
+   ["Write a `Dockerfile` for the pipeline (slim Python base, uv for locked dependencies, non-root user)","A container fixes the environment so 'works on my machine' stops being a problem."],
+   ["Add `.dockerignore`","Keeps images small and stops secrets or data from being baked in."]]},
+  {s:"Session 2",t:[
+   ["Write a Dockerfile (or command) for the Streamlit app","Each component should be independently runnable."],
+   ["Move all configuration to env vars and commit `.env.example`","The same image can run anywhere with different settings."]]},
+  {s:"Session 3",t:[
+   ["Write `docker-compose.yml` with `postgres` (named volume + healthcheck), `pipeline`, `app`","Compose describes a multi-service system as one file."],
+   ["Use `depends_on` with `condition: service_healthy`","Starting order is not the same as readiness. Learning the difference prevents flaky startups."]]},
+  {s:"Session 4",t:[
+   ["Add a `Makefile` with `make up`, `make down`, `make run`, `make test`","Short commands lower the cost of running the project and document how it works."],
+   ["Add an optional adminer service for database inspection","Easy database inspection speeds up debugging."]]},
+  {s:"Session 5: Clean-room test",t:[
+   ["Clone the repo into a fresh folder and run it from scratch","The only real test of reproducibility is a clean machine."],
+   ["Fix every manual step you needed and update the README","Each manual step you needed is a gap in your documentation."]]},
+  {s:"Session 6",t:[
+   ["Draw the architecture diagram and add it to the README and the dashboard's About page","Explaining a system visually forces you to understand it."],
+   ["Tag `v2`","Another restore point."]]}
+ ],
+ done:"`docker compose up` opens the working dashboard."
+},
+{
+ id:3, tag:"v3", title:"More data (scope expansion)", est:"about 8 sessions",
+ stack:"No new tool: a config-driven pipeline",
+ added:"Lithium, cobalt and more reporter countries, driven by config",
+ skill:"Config-driven design, analysis", kind:"Insight",
+ dash:{page:"Expanded analytical dashboard",
+  content:["Commodity and reporter selectors (graphite, lithium, cobalt, others; Germany, France, Japan and so on)","Comparison chart: HHI across commodities for the selected country","Heatmap: commodity x supplier share for the selected year","'Top dependency risks' table ranked by high HHI plus high exposure","A 'key findings' text box"],
+  q:"Which critical minerals are the most concentrated and most exposed, and how does that differ by country?",
+  v:"The biggest jump in analytical value: from one case study to a comparative analysis. This is where genuine insights start to appear, and it proves your pipeline is configuration-driven rather than hard-coded."},
+ sessions:[
+  {s:"Session 1: Config",t:[
+   ["Create `config/commodities.yaml` (name, HS codes, OECD product mapping) for graphite, lithium, cobalt plus 1-2 more","Moving choices into config means new minerals need no code changes."],
+   ["Create `config/reporters.yaml` (Germany, France, Japan, USA, South Korea)","Same idea for countries."]]},
+  {s:"Sessions 2-3: Parameterise",t:[
+   ["Refactor extract, transform and load to take commodity and reporter as parameters","Turning hard-coded scripts into reusable functions is a key engineering step."],
+   ["Verify each HS code actually returns data and note mapping caveats (e.g. HS codes covering mixed products)","You learn to question whether the data measures what you think it does."],
+   ["Extend the OECD mapping and check coverage per commodity","If restriction data does not cover a mineral, exposure numbers would mislead."]]},
+  {s:"Session 4: Rerun and test",t:[
+   ["Run the full pipeline for all combinations","Real scale shows problems a single case hides."],
+   ["Add a test: every configured commodity has data","Catches silent gaps when you add new configurations."],
+   ["Add sleeps/retries for API rate limits","Every public API has limits, and handling them is a basic ingestion skill."]]},
+  {s:"Sessions 5-7: Dashboard",t:[
+   ["Add commodity and reporter selectors in the sidebar","Interactivity lets users explore instead of reading a fixed story."],
+   ["Add the HHI-by-commodity comparison chart","Comparison is where analytical insight comes from."],
+   ["Add the commodity x supplier-share heatmap","Heatmaps show patterns across two dimensions at once."],
+   ["Add the 'top dependency risks' table","Turns analysis into a ranked, actionable list."]]},
+  {s:"Session 8",t:[
+   ["Write the first findings in the README (3-5 sentences) and tag `v3`","Practice stating what the data says, not just showing it."]]}
+ ],
+ done:"The dashboard compares minerals and countries, driven by config only."
+},
+{
+ id:4, tag:"v4", title:"Orchestration with Kestra and dlt", est:"about 11 sessions",
+ stack:"Kestra, dlt",
+ added:"Scheduled workflow, retries, backfills, incremental extraction",
+ skill:"Orchestration, recovery", kind:"Reliability",
+ dash:{page:"Dashboard + Pipeline health page",
+  content:["Last successful run per source (Comtrade, OECD)","Run history table: status, duration, rows loaded","Failure count and the most recent error message","Data freshness indicator ('data updated X days ago')","Backfill coverage: which years are loaded for which commodity"],
+  q:"Is the data up to date, and what happens when something breaks?",
+  v:"The data now refreshes itself. The page demonstrates scheduling, retries, backfills and failure recovery, and it is the first time the dashboard shows its own operational status, as real production dashboards do."},
+ sessions:[
+  {s:"Sessions 1-2: Kestra basics",t:[
+   ["Add Kestra (with its own Postgres backend) to Docker Compose","Orchestrators need their own backend and are a core DE system to understand."],
+   ["Run a hello-world flow","Learn the vocabulary (flows, tasks, inputs, triggers) on something trivial first."]]},
+  {s:"Sessions 3-4: The flow",t:[
+   ["Create `critical_minerals_pipeline.yaml`: extract, transform, load, test, export","Expressing dependencies between steps is what orchestration is."],
+   ["Add inputs for commodity, reporter and year","Parameterised flows can be reused and backfilled."],
+   ["Add retries with backoff and timeouts on the API tasks","Transient failures are normal, and retries make pipelines resilient."],
+   ["Add a monthly schedule trigger","Automation matches the refresh rate of the data, which is slow."]]},
+  {s:"Sessions 5-6: Backfill and failure",t:[
+   ["Run a historical backfill for all years","Proves the pipeline handles past data and tests idempotency under load."],
+   ["Force a failure (bad API key), read the logs, fix it and replay from the failed task","Debugging and recovery are the real day-to-day of data engineering."],
+   ["Add an error-notification task (log or email)","Failures nobody sees are the dangerous ones."]]},
+  {s:"Sessions 7-8: dlt",t:[
+   ["Complete the dlt quickstart","Learn what the tool does before applying it."],
+   ["Build a dlt pipeline for the Comtrade API with `merge` and a primary key","See how a framework handles upserts for you."],
+   ["Add incremental loading on year and inspect dlt's state","Incremental loads fetch only new data, saving time and API quota."],
+   ["Compare dlt vs your hand-written extractor in `docs/decisions.md` and choose which to keep","Judging tools against each other is a senior-level skill."]]},
+  {s:"Sessions 9-10: Run metadata",t:[
+   ["Create a `pipeline_runs` table: run_id, source, commodity, status, rows, started_at, finished_at","Data about the pipeline is what makes it observable."],
+   ["Write the 'last successful extraction per source' view","Freshness is the first question anyone asks about data."]]},
+  {s:"Session 11: Dashboard",t:[
+   ["Add the 'Pipeline health' page and tag `v4`","Surfaces operational status to the people who use the data."]]}
+ ],
+ done:"You can show a failed run, a replay and a backfill, with the status visible in the dashboard."
+},
+{
+ id:5, tag:"v5", title:"Cloud lake and warehouse: Terraform, GCS, BigQuery", est:"about 13 sessions",
+ stack:"Terraform, GCP, GCS, BigQuery",
+ added:"Raw and processed data in a cloud lake, warehouse queries",
+ skill:"Cloud, IaC, reconciliation", kind:"Scale",
+ note:"Before you start: set a budget alert, check the current free-tier and BigQuery sandbox limits, and never commit keys or Terraform state.",
+ dash:{page:"Dashboard on BigQuery + Warehouse page",
+  content:["Main pages now run on BigQuery (Postgres remains as a fallback)","Warehouse panel: table sizes, partitioning and clustering used, row counts per layer (raw, staging, analytics)","Reconciliation result: 'BigQuery vs Postgres: X rows compared, 0 differences'","Optional: query cost or bytes-scanned note"],
+  q:"Does the cloud version give the same answers, and why is the data organised this way?",
+  v:"It proves cloud capability (GCS, BigQuery, Terraform) and, importantly, correctness through reconciliation. The visible 0-differences check is stronger evidence than 'it runs on the cloud'. It also shows cost awareness."},
+ sessions:[
+  {s:"Sessions 1-2: Setup",t:[
+   ["Create the GCP project, a budget with low alerts and a least-privilege service account","Cost control and least privilege should come before building anything in the cloud."],
+   ["Install Terraform and learn `init`, `plan`, `apply`, `destroy`","This loop is how infrastructure as code works."],
+   ["Add `infra/` with `provider.tf`, `variables.tf`, `outputs.tf`","Organising Terraform cleanly keeps it maintainable."]]},
+  {s:"Sessions 3-4: Lake",t:[
+   ["Define a versioned GCS bucket in Terraform (check regions that qualify for free usage)","Object storage with versioning is the standard raw-data lake."],
+   ["Apply, verify, destroy, apply again","Proves the infrastructure is truly reproducible."],
+   ["Upload raw and processed files to `gs://bucket/raw/...` and `/processed/...`","Connects your pipeline to the lake."],
+   ["Add the upload as a Kestra task","Keeps the whole path automated."]]},
+  {s:"Sessions 5-6: Warehouse",t:[
+   ["Define the BigQuery datasets (`raw`, `staging`, `analytics`) in Terraform","Even datasets should be code, not clicked together."],
+   ["Load Parquet from GCS into BigQuery (external tables first, then native)","Compare the trade-offs between querying files and loading them."],
+   ["Recreate `trade_imports` partitioned by year and clustered by partner and HS code","Partitioning and clustering are how warehouses stay fast and cheap."]]},
+  {s:"Sessions 7-9: Metrics and reconciliation",t:[
+   ["Port the metric views to BigQuery SQL (`ON CONFLICT` becomes `MERGE`)","Learn dialect differences between databases."],
+   ["Write a reconciliation query comparing BigQuery to Postgres and make it a test","Correctness across platforms is the real test of a migration."],
+   ["Compare bytes scanned with and without partition filters and note the result honestly","BigQuery bills by data scanned, so you see why design matters."]]},
+  {s:"Sessions 10-12: Dashboard",t:[
+   ["Add a BigQuery data-source option to the dashboard's data layer (Postgres stays as fallback)","A switchable backend proves your decoupling works."],
+   ["Cache queries to stay inside free-tier limits","Speeds up the app and controls cost."],
+   ["Add the 'Warehouse' panel","Transparency about how data is stored helps technical readers."]]},
+  {s:"Session 13",t:[
+   ["Update the architecture diagram and tag `v5`","The diagram must evolve with the system or it becomes misleading."]]}
+ ],
+ done:"The dashboard runs on BigQuery and the results match Postgres."
+},
+{
+ id:6, tag:"v6", title:"Analytics engineering with dbt", est:"about 14 sessions",
+ stack:"dbt (dbt-bigquery, or dbt-postgres first for faster iteration), dbt_utils",
+ added:"Staging, intermediate and mart layers with tests and docs",
+ skill:"dbt, documentation, testing", kind:"Governance",
+ dash:{page:"Dashboard on dbt marts + Methodology page",
+  content:["Main pages now read from the dbt mart `fct_dashboard_results`","Methodology page: formulas for share, HHI and exposure; the lineage graph (screenshot or link to dbt docs); the list of tests and their status","Data dictionary: each column with its description from dbt","Test results summary (e.g. '42 tests passed')"],
+  q:"How exactly is each number calculated, and who guarantees it?",
+  v:"The move from 'it works' to 'it is documented, tested and maintainable'. Every metric traces to a definition and every definition has tests. It is the strongest sign of analytics engineering skills and the most useful page for a non-technical reader."},
+ sessions:[
+  {s:"Sessions 1-2: Setup",t:[
+   ["Install dbt, configure `profiles.yml` outside the repo, run `dbt debug`","Connection setup is the first hurdle, and credentials stay out of the repo."],
+   ["Declare sources in `sources.yml` with freshness checks","Sources make raw tables explicit, and freshness flags stale data."],
+   ["Load the country crosswalk as a seed","Small reference data belongs under version control."]]},
+  {s:"Sessions 3-4: Staging",t:[
+   ["Build `stg_uncomtrade_imports` and `stg_oecd_restrictions` (rename, cast, light cleaning only)","Staging isolates source quirks so downstream models stay clean."],
+   ["Document the grain of each model","Knowing 'what is one row' prevents wrong joins."]]},
+  {s:"Sessions 5-7: Intermediate and marts",t:[
+   ["Build `int_supplier_shares` and `int_restriction_matches`","Reusable building blocks avoid repeating logic."],
+   ["Build `fct_supplier_dependency` and `fct_restriction_exposure`","Marts are the business-ready outputs."],
+   ["Build `fct_dashboard_results` with the dashboard's fixed columns","Preserves the contract the dashboard needs."]]},
+  {s:"Sessions 8-10: Tests and docs",t:[
+   ["Add `unique`, `not_null`, `relationships`, `accepted_values` tests","Declarative tests are cheap and catch most data errors."],
+   ["Add dbt_utils tests (unique combination of columns, HHI between 0 and 10,000)","Richer checks for keys and value ranges."],
+   ["Add a custom test: shares per year sum to 1","Learn to write business-rule tests."],
+   ["Write descriptions for every model and column","Documentation next to code stays up to date."],
+   ["Run `dbt docs generate` and inspect the lineage graph","Lineage shows how data flows and what breaks if something changes."]]},
+  {s:"Sessions 11-12: Integrate",t:[
+   ["Add an incremental model for the large fact table","Understand when processing only new data is worth the complexity."],
+   ["Add `dbt build` to the Kestra flow and make it fail the flow on test failure","Bad data should stop the pipeline rather than reach the dashboard."],
+   ["Remove the duplicate metric SQL so dbt is the single source of truth","One definition per metric avoids contradictions."]]},
+  {s:"Sessions 13-14: Dashboard",t:[
+   ["Point the dashboard at the dbt mart","Completes the chain from raw data to governed output."],
+   ["Add the 'Methodology' page and tag `v6`","Explaining formulas publicly forces clarity."]]}
+ ],
+ done:"`dbt build` passes and each metric is defined in exactly one place."
+},
+{
+ id:7, tag:"v7", title:"Spark for larger scale", est:"about 10 sessions",
+ stack:"Apache Spark / PySpark",
+ added:"Heavy historical calculations at larger scale",
+ skill:"Spark, validation", kind:"Breadth",
+ dash:{page:"Dashboard + Global exposure page",
+  content:["Heatmap: reporters x commodities, coloured by HHI or exposure","World view: which countries are most dependent on which suppliers","Ranking of the most vulnerable country-commodity pairs","Performance note: pandas vs Spark processing time, data volume processed","Validation line: 'Spark results match dbt results'"],
+  q:"Where in the world is dependency most dangerous, across all minerals at once?",
+  v:"Analytical scope jumps from one country to a global picture, and it shows you can process data at larger scale and validate it against another engine. The honest performance note (including when Spark is not needed) shows good judgement."},
+ sessions:[
+  {s:"Sessions 1-2: Setup",t:[
+   ["Run PySpark locally (Docker, local mode)","Local mode lets you learn the API without a cluster."],
+   ["Learn DataFrames, `groupBy`, window functions and Spark SQL basics","These are the operations you will use for the metrics."]]},
+  {s:"Sessions 3-4: Scale the data",t:[
+   ["Extend the configs to more commodities, more reporters and more years","More data is the only honest reason to use a distributed engine."],
+   ["Load the larger dataset to Parquet","Spark reads columnar files efficiently."]]},
+  {s:"Sessions 5-7: Reimplement",t:[
+   ["Reimplement supplier share and HHI in PySpark","The same logic in a different paradigm builds deep understanding."],
+   ["Reimplement the same logic in Spark SQL","Compare the two Spark styles."],
+   ["Validate against the dbt results (same numbers within tolerance)","Validation across engines is how you trust new tooling."],
+   ["Write Parquet output partitioned by commodity and year","Partitioned output makes later reads faster."]]},
+  {s:"Session 8",t:[
+   ["Inspect the Spark UI (stages, shuffles) and note what you learn","Stages and shuffles explain why Spark jobs are fast or slow."]]},
+  {s:"Sessions 9-10: Dashboard",t:[
+   ["Add the 'Global exposure' page: reporters x commodities heatmap","Shows what the scaled data makes possible."],
+   ["Add the pandas-vs-Spark performance note","Knowing when not to use Spark is as valuable as knowing how."],
+   ["Tag `v7`","Restore point."]]}
+ ],
+ done:"The dashboard shows the global heatmap computed by Spark and validated against SQL."
+},
+{
+ id:8, tag:"v8", title:"Streaming and Bruin experiments", est:"about 16 sessions",
+ stack:"Kafka, Bruin (side experiment)",
+ added:"Simulated event stream with alerts; Bruin comparison",
+ skill:"Streaming, tool evaluation", kind:"Real-time concepts",
+ dash:{page:"Dashboard + Alerts page (simulated)",
+  content:["Live-style feed of flagged events (e.g. 'new restriction on supplier X raises exposure from 32% to 51%')","Counters: events processed, valid, rejected (dead-letter)","Small timeline of how the metrics moved after each event","A clear banner: 'Simulated data for demonstration'"],
+  q:"What if new trade or policy data arrived continuously, and how quickly could we spot a risk change?",
+  v:"Demonstrates streaming concepts (producers, topics, consumers, validation, alerting). Because the data is simulated, its value is skill demonstration, not new insight, so label it honestly. The Bruin comparison doc is evidence that you can evaluate tools critically."},
+ sessions:[
+  {s:"Sessions 1-3: Kafka basics",t:[
+   ["Run Kafka (or a compatible broker) in Docker Compose","The easiest way to get a broker locally."],
+   ["Learn topics, partitions, producers, consumers and consumer groups","These concepts explain how streaming scales and stays ordered."],
+   ["Define the event schema (event_id, event_type, country, product, value, published_at, simulated)","A schema is the contract between producers and consumers."]]},
+  {s:"Sessions 4-6: Streaming",t:[
+   ["Build a producer that replays or simulates events, flagged `simulated=true`","Learn to produce events, and be honest about synthetic data."],
+   ["Build a consumer that validates schema and ranges","Validating at the edge keeps bad events out."],
+   ["Send invalid events to a dead-letter topic","No event is lost, and bad ones can be inspected later."]]},
+  {s:"Sessions 7-8: Alerts",t:[
+   ["Update a running supplier share on each event","Stateful stream processing is the heart of streaming."],
+   ["Flag events that move HHI or exposure beyond a threshold","Turns a stream into decisions."],
+   ["Store alerts in a table","Alerts need a history."]]},
+  {s:"Sessions 9-12: Bruin experiment",t:[
+   ["Follow the Zoomcamp Bruin module","Learn the tool as designed before changing it."],
+   ["Rebuild one slice (graphite ingestion, staging, one mart) in Bruin with quality checks","A small, comparable scope."],
+   ["Write `docs/bruin-vs-kestra-dbt.md` comparing setup, ingestion, quality checks and observability","Structured comparison is how you justify tool choices."]]},
+  {s:"Sessions 13-16: Dashboard",t:[
+   ["Add the 'Alerts' page with a 'simulated data' banner","Transparency protects your credibility."],
+   ["Add the live-style feed of the last alerts","Shows what streaming enables."],
+   ["Write a short note on why streaming is a poor fit for periodic data but still useful to learn","Demonstrates judgement about the right tool for the data."],
+   ["Tag `v8`","Restore point."]]}
+ ],
+ done:"A producer, topic, consumer and the alerts page work end to end."
+},
+{
+ id:9, tag:"v1.0", title:"Capstone: the full platform", est:"about 15 sessions",
+ stack:"Everything from phases 0-8, integrated",
+ added:"One coherent platform and one final multi-page dashboard",
+ skill:"Integration, communication", kind:"Completeness",
+ dash:{page:"Final multi-page dashboard",
+  content:["Overview: headline KPIs, 3 key findings, commodity/reporter selectors (phases 0, 3)","Supplier dependency: stacked bars, HHI over time, supplier ranking (phases 0, 3)","Restrictions: exposure trend, restricted-supplier map, restriction types (phases 0, 3)","Global heatmap: multi-mineral, multi-country vulnerability map (phase 7)","Pipeline health: run history, freshness, failures, test status (phases 4, 6)","Alerts (simulated): event feed and metric changes (phase 8)","Methodology: formulas, lineage, tests, limitations (phase 6)","Architecture: final diagram, technology map, how to run (phases 2, 5)"],
+  q:"Where are the supply risks, how reliable is this analysis, and how is it built?",
+  v:"It tells the whole story in one place, from the insight (Overview to Global heatmap) to the trust (Pipeline health, Methodology) to the engineering (Architecture, Alerts). A recruiter can see both the analyst and the data engineer in one app."},
+ sessions:[
+  {s:"Sessions 1-3: Integration",t:[
+   ["Create one top-level Compose profile that brings up Postgres, Kestra, the app and the broker","A single entry point makes the system understandable."],
+   ["Make Kestra the single orchestrator: extract (dlt), lake (GCS), warehouse (BigQuery), dbt build, export","A coherent production path beats a collection of demos."],
+   ["Mark the production path (Kestra, dlt, GCS, BigQuery, dbt) vs labelled experiments (Spark, Kafka, Bruin)","Honesty about what is core and what is exploratory."],
+   ["Remove dead code and keep every milestone available as a tag","A clean repo is easier to read than a complete one."]]},
+  {s:"Sessions 4-5: Reliability",t:[
+   ["Run the full pipeline end to end from a clean environment","The final reproducibility test."],
+   ["Add a final test suite: pytest + dbt tests + reconciliation checks","One command that proves everything still works."],
+   ["(Optional) Add GitHub Actions for lint and tests","CI is expected in professional teams."]]},
+  {s:"Sessions 6-10: Final dashboard",t:[
+   ["Build the Overview page","The first thing readers see must carry the headline."],
+   ["Build the Supplier dependency and Restrictions pages","The core analysis, in depth."],
+   ["Build the Global heatmap page","The broadest view, from the scaled data."],
+   ["Build the Pipeline health and Alerts pages","Operational transparency and the streaming demonstration."],
+   ["Build the Methodology and Architecture pages","Trust and engineering evidence in one place."]]},
+  {s:"Sessions 11-12: Analysis",t:[
+   ["Choose 3 headline insights and verify each with a query","Conclusions must be traceable to data."],
+   ["Write the limitations honestly: HS-code coverage, restriction-data gaps, mirror and revision issues","Naming weaknesses is a mark of analytical maturity."]]},
+  {s:"Sessions 13-14: Presentation",t:[
+   ["Write the final README: problem, architecture, how to run, findings, what each phase taught","It is the first thing every reviewer reads."],
+   ["Record a 2-3 minute demo GIF or video","Many people will watch rather than run it."],
+   ["Publish the dashboard if cost-free and add the link to the repo","A link is the easiest portfolio asset to share."]]},
+  {s:"Session 15: Career packaging",t:[
+   ["Write 4-5 CV bullet points, one LinkedIn post and a short project page, then tag `v1.0-capstone`","Turning the work into career value is the actual goal of the project."]]}
+ ],
+ done:"A stranger can read the README, run the project, open the final dashboard and see the whole data journey from raw API to alerts."
+}
+];
+
+const KEY = "critical-minerals-plan-v1";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { state = {}; }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function fmt(s){ return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+function pct(n,d){ return d ? Math.round(100*n/d) : 0; }
+
+const phasesEl = document.getElementById("phases");
+const navEl = document.getElementById("nav");
+const ladderEl = document.getElementById("ladder");
+
+PHASES.forEach(p => {
+  const art = document.createElement("article");
+  art.className = "phase"; art.id = "phase-" + p.id;
+  let h = "";
+  h += "<h2>Phase " + p.id + ": " + esc(p.title) + "</h2>";
+  h += '<p class="meta"><b>Tag</b> ' + esc(p.tag) + " &nbsp;|&nbsp; <b>Stack</b> " + esc(p.stack) + " &nbsp;|&nbsp; <b>Effort</b> " + esc(p.est) + "</p>";
+  if (p.scope) h += '<p class="meta"><b>Scope</b> ' + esc(p.scope) + "</p>";
+  h += '<div class="pbar"><div class="track"><i id="bar-' + p.id + '"></i></div><span id="cnt-' + p.id + '"></span></div>';
+  if (p.note) h += '<div class="warn">' + esc(p.note) + "</div>";
+  h += '<div class="dash"><h3>Dashboard: ' + esc(p.dash.page) + "</h3>";
+  h += "<h4>What is on it</h4><ul class=\"plain\">" + p.dash.content.map(c => "<li>" + fmt(c) + "</li>").join("") + "</ul>";
+  h += "<h4>Question it answers</h4><p>" + fmt(p.dash.q) + "</p>";
+  h += "<h4>Value and progress signal</h4><p>" + fmt(p.dash.v) + "</p></div>";
+  p.sessions.forEach((s, si) => {
+    h += '<details class="sess" open data-p="' + p.id + '" data-s="' + si + '"><summary><span class="sn">' + esc(s.s) + '</span><span class="sc" id="sc-' + p.id + "-" + si + '"></span></summary><ul class="tasks">';
+    s.t.forEach((t, ti) => {
+      const id = "p" + p.id + "-s" + si + "-t" + ti;
+      h += '<li id="li-' + id + '"><label><input type="checkbox" id="' + id + '" data-id="' + id + '"><span><span class="t">' + fmt(t[0]) + '</span><span class="why">Why: ' + fmt(t[1]) + "</span></span></label></li>";
+    });
+    h += "</ul></details>";
+  });
+  h += '<div class="done-when"><b>Done when:</b> ' + fmt(p.done) + "</div>";
+  art.innerHTML = h;
+  phasesEl.appendChild(art);
+
+  const a = document.createElement("a");
+  a.href = "#phase-" + p.id;
+  a.innerHTML = "<span>Phase " + p.id + ": " + esc(p.title.split(":")[0]) + '</span><span class="pct" id="npct-' + p.id + '">0%</span>';
+  navEl.appendChild(a);
+
+  const l = document.createElement("a");
+  l.href = "#phase-" + p.id;
+  l.title = "Phase " + p.id + ": " + p.title;
+  l.innerHTML = '<div class="bar"><i id="lad-' + p.id + '"></i></div><small>' + esc(p.tag) + "</small>";
+  ladderEl.appendChild(l);
+});
+
+// table
+(function(){
+  const t = document.getElementById("glance");
+  let h = "<thead><tr><th>Phase</th><th>Main addition</th><th>Skill it proves</th><th>Type of progress</th><th>Effort</th><th>Tasks</th></tr></thead><tbody>";
+  PHASES.forEach(p => {
+    const n = p.sessions.reduce((a, s) => a + s.t.length, 0);
+    h += "<tr><td>" + p.id + "</td><td>" + esc(p.added) + "</td><td>" + esc(p.skill) + "</td><td>" + esc(p.kind) + "</td><td>" + esc(p.est) + "</td><td>" + n + "</td></tr>";
+  });
+  h += "</tbody>";
+  t.innerHTML = h;
+})();
+
+function update(){
+  let totalDone = 0, total = 0;
+  PHASES.forEach(p => {
+    let d = 0, n = 0;
+    p.sessions.forEach((s, si) => {
+      let sd = 0;
+      s.t.forEach((t, ti) => {
+        const id = "p" + p.id + "-s" + si + "-t" + ti;
+        const cb = document.getElementById(id);
+        cb.checked = !!state[id];
+        document.getElementById("li-" + id).classList.toggle("done", cb.checked);
+        n++; if (cb.checked) { d++; sd++; }
+      });
+      document.getElementById("sc-" + p.id + "-" + si).textContent = sd + "/" + s.t.length;
+    });
+    document.getElementById("bar-" + p.id).style.width = pct(d, n) + "%";
+    document.getElementById("cnt-" + p.id).textContent = d + " / " + n + " tasks";
+    document.getElementById("npct-" + p.id).textContent = pct(d, n) + "%";
+    document.getElementById("lad-" + p.id).style.width = pct(d, n) + "%";
+    totalDone += d; total += n;
+  });
+  document.getElementById("overall").textContent = pct(totalDone, total) + "%";
+  document.getElementById("overallText").textContent = totalDone + " of " + total + " tasks complete";
+}
+
+document.addEventListener("change", e => {
+  if (e.target.matches('input[type="checkbox"][data-id]')) {
+    const id = e.target.dataset.id;
+    if (e.target.checked) state[id] = 1; else delete state[id];
+    save(); update();
+  }
+});
+document.getElementById("expand").onclick = () => document.querySelectorAll("details.sess").forEach(d => d.open = true);
+document.getElementById("collapse").onclick = () => document.querySelectorAll("details.sess").forEach(d => d.open = false);
+document.getElementById("print").onclick = () => { document.querySelectorAll("details.sess").forEach(d => d.open = true); window.print(); };
+document.getElementById("reset").onclick = () => {
+  if (confirm("Clear all ticked tasks? This cannot be undone.")) { state = {}; save(); update(); }
+};
+update();
+</script>
+</body>
+</html>
