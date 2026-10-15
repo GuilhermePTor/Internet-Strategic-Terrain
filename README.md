@@ -1,324 +1,226 @@
-# Internet as Strategic Terrain
+# Critical Minerals Supply Risk Platform
 
-**An open-source intelligence platform for detecting, reconstructing, and analysing internet connectivity disruptions.**
+**An open-source data engineering and geopolitical-risk analytics project** exploring how dependent importing countries are on a small number of suppliers for critical minerals—and how much of that supply may be exposed to export restrictions.
 
-<p align="center">
-  <strong>DETECT → RECONSTRUCT → ASSESS → EXPLAIN</strong>
-</p>
+> **Project status:** Roadmap / in development. Features, pipelines, and dashboards described below are planned milestones until they are implemented and validated in this repository.
 
-Internet connectivity is strategic infrastructure. When a region loses connectivity, traffic is rerouted, or access to online services is disrupted, independent measurement systems record different traces of the event.
+## Overview
 
-**Internet as Strategic Terrain** combines active network probing, BGP routing data, and internet censorship measurements to investigate connectivity disruptions, reconstruct their timelines, quantify uncertainty, and evaluate what the available evidence can—and cannot—establish about their causes.
+Critical minerals are essential inputs to technologies and industrial supply chains. A country may import most of a mineral from only a few suppliers, leaving it exposed to supply concentration or policy changes. This project aims to turn public trade and export-restriction data into a reproducible analytical platform that makes those dependencies easier to inspect.
 
-The objective is to build a reproducible intelligence-engineering platform that turns fragmented public measurements into defensible, evidence-based assessments.
+The project starts with a deliberately small case study: **Germany's imports of natural graphite**, using HS codes `250410` and `250490` over roughly ten years. It will then expand to more minerals and importing countries as the data model and pipeline mature.
 
----
+The aim is to build a useful dashboard first, then strengthen the system underneath it one layer at a time. Each milestone should leave a working, testable version rather than replacing the project with an unfinished rewrite.
 
-## Project overview
+## Research questions
 
-| | |
+- How concentrated are Germany's natural-graphite imports across supplier countries?
+- How has supplier concentration changed over time?
+- What share of imports comes from suppliers associated with relevant export restrictions?
+- As the project expands, which country–commodity combinations show the greatest combination of supplier concentration and restriction exposure?
+
+The dashboard is intended to support analysis, not to make definitive claims about future shortages or geopolitical intent. Results depend on the coverage, definitions, and quality of the source datasets.
+
+## Initial scope
+
+| Area | Initial approach |
 |---|---|
-| **Discipline** | Open-source intelligence (OSINT), network measurement, cyber intelligence |
-| **Primary focus** | Internet connectivity disruptions |
-| **Research approach** | Multi-source detection, event reconstruction, statistical evaluation |
-| **Data policy** | Publicly available measurement data and documented sources |
-| **Reproducibility** | Versioned datasets, repeatable pipelines, documented methodology |
-| **Version 1.0** | Day 90 — validated research pipeline |
-| **Version 2.0** | Day 107 — interactive command-center console |
+| Importing country | Germany |
+| Commodity | Natural graphite |
+| Product codes | HS `250410` and `250490` |
+| Time range | Approximately the latest 10 years with usable data |
+| Trade data | UN Comtrade import records by partner and year |
+| Policy data | OECD export-restriction data, mapped to countries and products where possible |
+| Dashboard | Streamlit and Plotly |
+| Initial storage | Raw source files and processed Parquet files |
 
-### Research question
+Product-code definitions and the exact coverage of each source will be documented before results are interpreted. A code may cover a broader or different product category than the analytical label suggests.
 
-> Can independent internet measurement sources be combined to detect, reconstruct, and characterise connectivity disruptions more reliably than any individual source?
+## Key metrics
 
-This project tests that question empirically rather than assuming that combining more data automatically produces better intelligence.
+### Supplier share
 
-The evaluation compares individual measurement sources against a multi-source approach, using historical events, documented ground truth where available, and uncertainty-aware performance metrics.
+For a given reporter, commodity, and year:
 
-## Objectives
+`Supplier share = import value from partner / total import value`
 
-- **Detect:** Identify abnormal connectivity conditions using measurable signals.
-- **Reconstruct:** Establish the likely onset, duration, geographic scope, and evolution of an event.
-- **Correlate:** Determine whether independent measurement sources support, contradict, or fail to corroborate one another.
-- **Assess:** Quantify detection performance, uncertainty, data coverage, and evidential limitations.
-- **Explain:** Develop evidence-based hypotheses about possible causes without confusing correlation with attribution.
-- **Reproduce:** Make the analytical process repeatable from raw observations to final assessment.
-- **Generalise:** Build reusable components that can support future investigations into other strategic infrastructure and geopolitical events.
+Shares should sum to approximately `1.0` for each complete reporter–commodity–year group, subject to rounding and the handling of missing or special trade-partner records.
 
-## Initial case study: Kherson, Ukraine — 30 May 2022
+### Herfindahl–Hirschman Index (HHI)
 
-The first investigation examines the reported connectivity outage and rerouting associated with Kherson on 30 May 2022.
+`HHI = sum of (supplier share × 100)²`
 
-The case will be assessed against independently published reporting, including relevant material from Cloudflare and WIRED, alongside available technical measurements.
+The resulting scale runs from close to `0` toward `10,000`. Higher values indicate that imports are concentrated among fewer suppliers. The dashboard may show `2,500` as a reference for high concentration, but this will be presented as an interpretive benchmark—not a universal rule for mineral-supply risk.
 
-### Investigation workflow
+### Export-restriction exposure
 
-1. Establish the reported event timeline and identify source documents.
-2. Locate relevant historical network measurements and assess their coverage.
-3. Identify anomalies in connectivity and routing behaviour.
-4. Correlate observations across independent data sources.
-5. Reconstruct the event timeline and characterise its observable impact.
-6. Compare the resulting assessment with published reporting.
-7. Document uncertainty, competing explanations, and unresolved questions.
+`Exposure = import value from partners with a relevant active restriction / total import value`
 
-**Fallback case:** If historical coverage for Kherson is insufficient, investigate the 2011 connectivity disruptions in Egypt or Libya, drawing on the events examined in the foundational Dainotti et al. research.
+The metric is only as reliable as the match between a restriction's country, product scope, and effective dates and the relevant trade records. Unmatched or uncertain restrictions must be documented rather than silently treated as confirmed exposure.
 
-The fallback decision will be based on data availability, measurement quality, and the ability to evaluate the methodology—not on which event produces the most compelling narrative.
+## Planned dashboard
 
-## Data sources
+The interface will grow as the underlying platform develops:
 
-The initial research will investigate three complementary measurement categories.
+- **Overview:** headline KPIs, import composition by supplier, HHI over time, restriction exposure, and supplier geography.
+- **Supplier dependency:** supplier rankings, concentration trends, and comparisons across countries and commodities.
+- **Restrictions:** restriction coverage, exposure trends, and the evidence behind each match.
+- **Global exposure:** a country-by-commodity view of concentration and exposure.
+- **Pipeline health:** source freshness, run history, load counts, and test status.
+- **Methodology:** metric definitions, data lineage, test results, source coverage, and limitations.
+- **Alerts (demonstration):** a clearly labelled simulated event feed to demonstrate streaming concepts. Simulated events will not be presented as real policy developments.
+- **Architecture:** system diagram, components, and instructions for reproducing the project.
 
-| Source | What it can reveal | Important limitation |
-|---|---|---|
-| **Active network probing** | Reachability changes, probe failures, and differences in observed connectivity | Probe coverage is incomplete and failures may have causes unrelated to a regional outage |
-| **BGP routing measurements** | Route withdrawals, announcement changes, and shifts in routing visibility | A routing change does not necessarily mean end users have lost connectivity |
-| **Censorship measurements** | Changes in the accessibility of particular services, domains, or protocols | Blocking of a service is not equivalent to a complete internet outage |
+## Architecture roadmap
 
-Candidate datasets, collection periods, licensing conditions, and geographic coverage will be documented before implementation. Availability of historical observations will be verified during the initial research phase.
+The planned path evolves from a small local pipeline into a more complete data platform:
 
-## Analytical methodology
-
-### 1. Data acquisition and validation
-
-- Identify relevant public datasets and measurement APIs.
-- Record source provenance, collection timestamps, geographic coverage, and limitations.
-- Validate schemas, timestamps, missing values, and duplicate observations.
-- Preserve raw data separately from transformed datasets.
-- Track data availability and ingestion failures.
-
-### 2. Event detection
-
-Establish normal measurement behaviour where sufficient historical data exists, then identify deviations that may indicate a disruption.
-
-Candidate signals include:
-
-- Abnormal increases in probe failures.
-- Changes in BGP announcements and withdrawals.
-- Changes in observed reachability or routing visibility.
-- Deviations from historical patterns and relevant comparison regions.
-
-Detection thresholds and baseline periods will be documented and tested for sensitivity.
-
-### 3. Multi-source correlation
-
-Align observations by time and, where defensible, by network, region, or affected service.
-
-Evaluate whether independent signals:
-
-- Occur within a consistent time window.
-- Indicate compatible forms of disruption.
-- Expand or narrow the estimated event scope.
-- Provide genuinely independent corroboration or share underlying measurement dependencies.
-
-The analysis will distinguish missing evidence from evidence that contradicts a hypothesis.
-
-### 4. Event reconstruction
-
-Generate a structured event record containing, where supported:
-
-- Estimated start and end times.
-- Detection and recovery intervals.
-- Affected networks, regions, or services.
-- Observed routing changes.
-- Supporting and conflicting measurements.
-- Confidence estimates and known data gaps.
-
-When exact onset or recovery cannot be established, report an interval rather than inventing a precise timestamp.
-
-### 5. Evidence assessment
-
-Every significant analytical claim should be traceable to its underlying measurements or documented sources.
-
-The assessment will distinguish:
-
-- **Observation:** What the measurements directly show.
-- **Inference:** What follows from the observations under stated assumptions.
-- **Hypothesis:** A possible explanation requiring additional evidence.
-- **Attribution:** A claim about responsibility or cause requiring evidence beyond the existence of a disruption.
-
-The presence of an outage and the identity or intent of the actor responsible are separate analytical questions.
-
-## Evaluation framework
-
-The core contribution is not simply detecting a historical outage. It is testing whether multi-source analysis improves the quality of detection and reconstruction.
-
-The evaluation will compare:
-
-1. Active probing alone.
-2. BGP routing measurements alone.
-3. Censorship measurements alone, where applicable.
-4. A combined multi-source approach.
-
-Candidate metrics include:
-
-| Metric | Purpose |
-|---|---|
-| Precision | How often detected events correspond to validated events |
-| Recall | How many validated events are detected |
-| F1 score | Balance between precision and recall |
-| Detection delay | Time between the earliest defensible event onset and detection |
-| Timeline error | Difference between estimated and reference event times |
-| Geographic or network coverage | How much of the documented event can be characterised |
-| Calibration | Whether stated confidence levels correspond to observed reliability |
-| Uncertainty intervals | How much uncertainty remains in event timing and scope |
-
-Metrics will only be reported when the data supports their calculation. The evaluation will document reference-label quality, class imbalance, missing data, and potential leakage between training, calibration, and test periods.
-
-Where feasible, confidence intervals will quantify uncertainty in performance estimates. A single historical case will be treated as a case study, not proof of general performance across all disruptions.
-
-## Technical architecture
-
-The project will evolve from a reproducible research pipeline into an interactive analytical interface.
-
-```text
-             PUBLIC MEASUREMENT SOURCES
-          ┌──────────┬──────────┬──────────┐
-          │  Active  │   BGP    │Censorship│
-          │  Probing │ Routing  │  Data    │
-          └────┬─────┴────┬─────┴────┬─────┘
-               └──────────┼──────────┘
-                          ▼
-                INGESTION & VALIDATION
-                          │
-                          ▼
-                  NORMALISED DATA
-                          │
-                          ▼
-                 TEMPORAL CORRELATION
-                          │
-                          ▼
-                 EVENT DETECTION
-                          │
-                          ▼
-                EVENT RECONSTRUCTION
-                          │
-                          ▼
-                EVIDENCE & UNCERTAINTY
-                          │
-                          ▼
-                  EVALUATION REPORTS
-                          │
-                          ▼
-                 COMMAND-CENTER UI
-                       (v2.0)
+```mermaid
+flowchart LR
+    A[UN Comtrade API] --> B[Extract and preserve raw data]
+    C[OECD restriction data] --> B
+    B --> D[Clean and standardise]
+    D --> E[Processed Parquet]
+    E --> F[Metrics and restriction matching]
+    F --> G[Results table]
+    G --> H[Streamlit + Plotly dashboard]
+    D -. later milestone .-> I[PostgreSQL]
+    I -. later milestone .-> J[Kestra + dlt orchestration]
+    J -. later milestone .-> K[GCS data lake]
+    K -. later milestone .-> L[BigQuery warehouse]
+    L -. later milestone .-> M[dbt models and tests]
+    M --> H
 ```
 
-The architecture will be refined as the source inventory and data requirements become clear. Technology choices will follow demonstrated requirements rather than adding infrastructure for its own sake.
+The diagram represents the **intended progression**, not a claim that every component is already operational. The initial version prioritises a simple end-to-end result; later phases add persistence, testing, containers, orchestration, cloud infrastructure, analytics engineering, and larger-scale processing.
 
-## Development roadmap
+## Technology roadmap
 
-The build plan uses three focused tasks per day, approximately 30–60 minutes of total daily work, and a buffer day at the end of each phase.
+| Milestone | Main addition | What it demonstrates |
+|---|---|---|
+| `v0` | Python, `uv`, pandas, Parquet, Streamlit, Plotly | First reproducible pipeline and analytical dashboard |
+| `v1` | PostgreSQL, SQL, expanded `pytest` tests | Data modelling, upserts, quality checks, and idempotency |
+| `v2` | Docker and Docker Compose | Reproducible local setup for the app, pipeline, and database |
+| `v3` | Config-driven countries and commodities | Reusable ingestion and comparative analysis |
+| `v4` | Kestra and dlt | Scheduling, retries, backfills, incremental ingestion, and run metadata |
+| `v5` | Terraform, Google Cloud Storage, BigQuery | Infrastructure as code, cloud storage, warehouse modelling, and reconciliation |
+| `v6` | dbt | Staging and mart layers, documented models, lineage, and governed metrics |
+| `v7` | Apache Spark / PySpark | Larger-scale processing, with results checked against existing outputs |
+| `v8` | Kafka and a small Bruin comparison | Streaming concepts, validation, simulated alerts, and tool evaluation |
+| `v1.0-capstone` | Integrated platform | End-to-end pipeline, tested outputs, documented methodology, and final dashboard |
 
-The schedule is a target, not a substitute for validation. If a dataset or methodological assumption proves inadequate, the plan should adapt rather than conceal the limitation.
+Tools are added only when their learning objective is clear. Spark, Kafka, and Bruin are later-stage learning or comparison exercises; the project will document when a simpler tool is a better fit. Cloud resources are optional and will only be used after checking current quotas and potential costs.
 
-### Version 1.0 — Day 90
+## Results-table contract
 
-**Deliverable: a reproducible research and evaluation pipeline.**
+To keep the dashboard independent from the storage and processing tools, every phase should expose the same analytical result columns:
 
-- [ ] Define the research question, scope, and evaluation criteria.
-- [ ] Identify and validate the initial public measurement sources.
-- [ ] Establish the historical event reference timeline.
-- [ ] Build repeatable ingestion and validation workflows.
-- [ ] Normalise measurements and align observations temporally.
-- [ ] Implement individual-source detection baselines.
-- [ ] Implement multi-source correlation and event reconstruction.
-- [ ] Quantify uncertainty and evaluate detection performance.
-- [ ] Produce an evidence-linked case study and research report.
-- [ ] Document setup, data provenance, limitations, and reproduction steps.
+`year, commodity, reporter, partner, import_value_usd, share, hhi, restricted_flag, exposure`
 
-**Release criterion:** Version 1.0 is complete when another person can follow the documented workflow, reproduce the analysis from accessible data, inspect the evidence behind the findings, and understand the limitations of the conclusions.
-
-### Version 2.0 — Day 107
-
-**Deliverable: an interactive intelligence command-center console.**
-
-- [ ] Design an event-centric analytical interface.
-- [ ] Visualise disruption timelines and affected networks or regions.
-- [ ] Display correlated signals from the available measurement sources.
-- [ ] Surface evidence provenance and uncertainty alongside findings.
-- [ ] Add event filtering, investigation summaries, and source drill-downs.
-- [ ] Connect the interface to the validated analytical outputs.
-- [ ] Document the console architecture and demonstrate the historical case.
-
-The console is a presentation and investigation layer, not a replacement for the underlying evidence pipeline.
+Column names should not change between phases. If the model needs to evolve, the change should be documented and tested deliberately. The pipeline should also preserve raw source responses, record source retrieval dates, and make transformations reproducible.
 
 ## Repository structure
 
-The following is a proposed structure; directories will be added as implementation progresses.
+The repository is expected to grow toward a structure similar to this:
 
 ```text
-internet-as-strategic-terrain/
-├── README.md
-├── docs/
-│   ├── research-question.md
-│   ├── methodology.md
-│   ├── data-sources.md
-│   ├── evaluation.md
-│   └── case-studies/
-│       └── kherson-2022.md
-├── configs/
+critical-minerals-platform/
+├── app/                  # Streamlit dashboard
+├── config/               # Commodity and reporter configuration
 ├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── reference/
-├── notebooks/
-├── src/
-│   ├── ingestion/
-│   ├── validation/
-│   ├── normalisation/
-│   ├── detection/
-│   ├── correlation/
-│   ├── reconstruction/
-│   └── evaluation/
-├── tests/
-├── reports/
-└── dashboard/
+│   ├── raw/              # Unmodified source extracts (not committed)
+│   └── processed/        # Cleaned intermediate data (not committed)
+├── docs/
+│   ├── decisions.md      # Technical decisions and trade-offs
+│   └── architecture/     # Architecture diagrams
+├── infra/                # Terraform, introduced in a later phase
+├── sql/                  # Database schema and analytical SQL
+├── src/                  # Extraction, transformation, loading, and metrics
+├── tests/                # Data and pipeline tests
+├── .env.example          # Names of required environment variables; no secrets
+├── CHANGELOG.md          # Milestone history
+├── README.md
+└── pyproject.toml        # Python project and dependency configuration
 ```
 
-Large datasets, restricted data, credentials, and generated artifacts should not be committed to Git. The repository should contain source references, data acquisition instructions, reproducible code, and small example fixtures where permitted.
+The structure is a target layout and may be introduced incrementally as the corresponding components are built.
 
-## Responsible analysis
+## Getting started
 
-Internet measurements are incomplete, and technical observations rarely establish intent on their own.
+The initial milestone is designed to run locally with free/open-source tools. Exact commands may change as the repository is implemented; the following is the intended workflow for Phase `v0`.
 
-This project will therefore:
+### Prerequisites
 
-- Use public, lawfully accessible measurement sources.
-- Respect source licensing, access policies, and applicable terms.
-- Avoid collecting unnecessary personal or sensitive information.
-- Distinguish confirmed observations from interpretations and hypotheses.
-- Document missing coverage and alternative explanations.
-- Avoid presenting a correlation as proof of causation or responsibility.
-- Preserve uncertainty rather than forcing every event into a definitive narrative.
+- Python version recorded in the project configuration
+- [`uv`](https://docs.astral.sh/uv/) for Python project and dependency management
+- A free UN Comtrade account/API key, subject to current access and quota limits
+- Git
 
-The objective is defensible analysis, not the appearance of certainty.
+### Intended local workflow
 
-## Research foundations
+```bash
+# Clone the repository
+git clone <your-repository-url>
+cd critical-minerals-platform
 
-The initial investigation will build on established work in internet measurement, censorship detection, routing analysis, and the study of large-scale connectivity disruptions.
+# Install the locked project dependencies
+uv sync --locked
 
-Key starting points:
+# Create a local environment file from the example, then add your own key
+# Windows PowerShell:
+Copy-Item .env.example .env
 
-- **Dainotti et al.** — *Analysis of Country-wide Internet Outages Caused by Censorship*, an important foundation for studying large-scale national connectivity disruptions.
-- **Cloudflare** — Internet traffic, connectivity, and outage reporting that may help establish context for the selected event.
-- **WIRED** — Published reporting relevant to the Kherson case and its historical context.
+# Run the pipeline and launch the dashboard once these entry points exist
+uv run python run_pipeline.py
+uv run streamlit run app/app.py
+```
 
-Exact publications, source URLs, relevant passages, and the role each source plays in validating the event will be recorded in the case-study documentation. Published reporting will serve as reference evidence, not as a substitute for independent measurement analysis.
+The pipeline should save untouched source responses under `data/raw/`, write cleaned data to `data/processed/`, and generate the stable results table used by the dashboard. The `.env` file must remain local and be excluded from Git. Do not commit API keys, raw data, cloud credentials, or Terraform state.
+
+## Data quality and reproducibility
+
+The project will add automated checks as it grows. The initial checks include:
+
+- Supplier shares sum to approximately `1.0` for each complete group.
+- HHI stays within its expected range of `0` to `10,000`.
+- There are no duplicate partner/year rows at the declared grain.
+- Every supplier used in a joined result can be mapped through the country crosswalk.
+- Restriction matches use documented product and date rules.
+- Re-running a load does not create duplicate records or unexpectedly change row counts.
+- Results from later implementations are reconciled against the initial baseline within a documented tolerance.
+
+Each milestone should update `docs/decisions.md`, add a screenshot of the dashboard, update `CHANGELOG.md`, and create a Git tag. This provides a visible record of both the analytical output and the engineering evolution.
+
+## Limitations and interpretation
+
+- **Trade data is not a complete picture of supply risk.** Import values do not directly measure domestic production, inventory, substitution, recycling, or the resilience of downstream supply chains.
+- **Product codes have boundaries.** HS codes may aggregate different grades or uses and may change between nomenclature revisions.
+- **Restriction data needs careful matching.** Restrictions can differ in product coverage, policy status, dates, exemptions, and enforcement; a country-level flag alone may overstate exposure.
+- **Trade records can be revised or reported differently.** Mirror flows, re-exports, partner definitions, missing values, and revisions can affect comparisons.
+- **Concentration is not the same as vulnerability.** A high HHI is a signal to investigate, not proof that a disruption will occur.
+- **Synthetic streaming events are demonstrations only.** They must be clearly marked and must not be confused with observed policy events.
+- **Cloud cost and free-tier availability can change.** Check current pricing, quotas, and sandbox limits before creating resources; destroy disposable infrastructure when finished.
+
+## Learning objectives
+
+The platform is both an analytical project and a practical learning path for data engineering. It is intended to demonstrate API ingestion, data cleaning, country standardisation, SQL modelling, idempotent loading, automated testing, containerisation, orchestration, cloud infrastructure, warehouse design, dbt transformations, distributed processing, and streaming fundamentals—all anchored to one research question and one stable dashboard.
+
+The sequence is inspired in part by topics covered in the [DataTalks.Club Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp). This repository is an independent project, not an official Zoomcamp project.
 
 ## Project principles
 
-**Evidence before narrative.** Establish what happened before proposing why it happened.
+1. Build a small end-to-end version before adding infrastructure.
+2. Keep the dashboard's result-table contract stable across milestones.
+3. Prefer tested, reproducible analysis over extra charts or tools.
+4. Keep raw data, credentials, and generated infrastructure state out of version control.
+5. Document assumptions, source gaps, and failures instead of hiding them.
+6. Add complexity only when it answers a learning goal or improves reliability, analysis, or reproducibility.
 
-**Independent corroboration.** Test whether multiple sources improve the assessment rather than assuming they do.
+## Sources
 
-**Uncertainty is a result.** Incomplete coverage and ambiguous signals are part of the analytical output.
+- [UN Comtrade](https://comtradeplus.un.org/) — international merchandise trade statistics.
+- OECD export-restriction data on industrial raw materials — the exact dataset, download date, product coverage, and any mapping assumptions will be recorded in `SOURCES.md` as ingestion is implemented.
 
-**Reproducibility over spectacle.** Every conclusion should be traceable to a documented process.
+## License
 
-**Reusable infrastructure.** Build components that can support future investigations into other strategic systems without rebuilding the analytical foundation.
-
----
-
-*Internet as Strategic Terrain — Version 1.0 target: Day 90. Command-center console: Day 107.*
-
-**Detect the disruption. Reconstruct the event. Assess the evidence. Explain what can be established.**
+A license has not yet been selected. Add a `LICENSE` file before describing the repository as open source.
